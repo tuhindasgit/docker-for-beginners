@@ -1,0 +1,199 @@
+
+A>>>>>>>>>>>>>> Hello Wolrd Dockerized
+1. yum install docker  //To Install Docker
+    
+2. yum install git  //To Install Git
+   
+3. service docker start  //To start docker
+    
+4. docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED 
+
+5. [root@ip-172-31-30-63 ec2-user]# git clone https://github.com/tuhindasgit/docker-hello-world.git //clonning git containt into ec2
+
+6./*
+* after clonning the repo; we will find Docker file and then build it with name as -t prtk
+* we traversed this far for Docker_file else we can mention path as well
+*/
+[root@ip-172-31-30-63 ec2-user]# ls
+docker-hello-world
+[root@ip-172-31-30-63 ec2-user]# cd docker-hello-world/
+[root@ip-172-31-30-63 docker-hello-world]# ls
+banking.system  hello-world  README.md
+[root@ip-172-31-30-63 docker-hello-world]# cd hello-world/
+[root@ip-172-31-30-63 hello-world]# ls
+Dockerfile  mvnw  mvnw.cmd  pom.xml  src  target
+[root@ip-172-31-30-63 hello-world]# docker build . -t prtk
+
+7.
+/*
+* after runni gDocker file... all doker statements are build as shown
+*/
+[root@ip-172-31-30-63 hello-world]# docker build . -t prtk
+Sending build context to Docker daemon  16.28MB
+Step 1/4 : FROM openjdk:8
+8: Pulling from library/openjdk
+55cbf04beb70: Pull complete
+1607093a898c: Pull complete
+9a8ea045c926: Pull complete
+d4eee24d4dac: Pull complete
+c58988e753d7: Pull complete
+794a04897db9: Pull complete
+70fcfa476f73: Pull complete
+0539c80a02be: Pull complete
+54fefc6dcf80: Pull complete
+Digest: sha256:cbf0fdbfedf4c741c587d4451debfcb56ac8bde15180b13111bb130a28086678
+Status: Downloaded newer image for openjdk:8
+ ---> 8c80ddf988c8
+Step 2/4 : ADD target/docker-hello-world.jar docker-hello-world.jar
+ ---> a0ee9af7e314
+Step 3/4 : EXPOSE 8080
+ ---> Running in 02585124187c
+Removing intermediate container 02585124187c
+ ---> 7aab166ba5ed
+Step 4/4 : ENTRYPOINT ["java","-jar","docker-hello-world.jar"]
+ ---> Running in a7441b2d04a2
+Removing intermediate container a7441b2d04a2
+ ---> ff17b8902aaa
+Successfully built ff17b8902aaa
+Successfully tagged prtk:latest
+Successfully tagged prtk:latest
+[root@ip-172-31-30-63 hello-world]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+prtk                latest              ff17b8902aaa        48 seconds ago      640MB
+openjdk             8                   8c80ddf988c8        9 days ago          624MB
+
+
+8. /*
+* runnit built image 
+*/
+[root@ip-172-31-30-63 hello-world]# docker run -p 8080:8090 prtk
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.0.3.RELEASE)
+ 
+[root@ip-172-31-30-63 hello-world]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                        PORTS               NAMES
+76c180fee4bf        prtk                "java -jar docker-he…"   4 minutes ago       Exited (130) 13 seconds ago                       keen_shannon
+
+9. /*
+* to name the container
+*/
+[root@ip-172-31-30-63 hello-world]# docker run -p 8080:8080  --name prateek -d prtk
+c4b8da22c31d0a335da6e81789e3c7c1a953bb19983535413c6bc99b60205427
+[root@ip-172-31-30-63 hello-world]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+c4b8da22c31d        prtk                "java -jar docker-he…"   3 seconds ago       Up 2 seconds        0.0.0.0:8080->8080/tcp   prateek
+
+
+
+B>>>>>>>>>>>>>>BankApp + Mysql Dockerized
+
+1. 
+// pulling mysql form hub and contained it..
+[root@ip-172-31-30-63 banking.system]# ls
+Dockerfile  mvnw  mvnw.cmd  pom.xml  src  target
+[root@ip-172-31-30-63 banking.system]# docker run --name mysql_b -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USERNAME=root -e MYSQL_DATABASE=test -d mysql
+
+[root@ip-172-31-30-63 banking.system]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+8806f5711ea6        mysql               "docker-entrypoint.s…"   17 seconds ago      Up 16 seconds       3306/tcp                 mysql_b
+c4b8da22c31d        prtk                "java -jar docker-he…"   5 minutes ago       Up 5 minutes        0.0.0.0:8080->8080/tcp   prateek
+
+2. //runnig bank docker file
+[root@ip-172-31-30-63 banking.system]# docker build . -t mysql_bank
+Sending build context to Docker daemon  57.07MB
+Step 1/4 : FROM openjdk:8
+ ---> 8c80ddf988c8
+Step 2/4 : ADD target/bank-mysql.jar bank-mysql.jar
+ ---> c016d6e48ce6
+Step 3/4 : EXPOSE 8080
+ ---> Running in f9ab0710dbbb
+Removing intermediate container f9ab0710dbbb
+ ---> 8ae2cf0e2863
+Step 4/4 : ENTRYPOINT ["java","-jar","bank-mysql.jar"]
+ ---> Running in 214716fb994f
+Removing intermediate container 214716fb994f
+ ---> e6e18c76d237
+Successfully built e6e18c76d237
+Successfully tagged mysql_bank:latest
+[root@ip-172-31-30-63 banking.system]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mysql_bank          latest              e6e18c76d237        7 seconds ago       652MB
+prtk                latest              ff17b8902aaa        28 minutes ago      640MB
+openjdk             8                   8c80ddf988c8        9 days ago          624MB
+mysql               latest              f45277861b04        9 days ago          445MB
+[root@ip-172-31-30-63 banking.system]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                    NAMES
+8806f5711ea6        mysql               "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp                 mysql_b
+c4b8da22c31d        prtk                "java -jar docker-he…"   6 minutes ago        Up 6 minutes        0.0.0.0:8080->8080/tcp   prateek
+
+3.
+// linking mysql(mysql_b) container with bankapp(maysql_bank) container..
+[root@ip-172-31-30-63 banking.system]# docker run --name mysql_bank_app -p 8080:8080 --link mysql_b mysql_bank
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::       (v1.5.13.RELEASE)
+ 
+ 4. 
+ [root@ip-172-31-30-63 banking.system]# docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+8da18acfc283        mysql_bank          "java -jar bank-mysq…"   4 seconds ago       Up 3 seconds        0.0.0.0:8080->8080/tcp   mysql_bank_ap
+8806f5711ea6        mysql               "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        3306/tcp                 mysql_b
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
