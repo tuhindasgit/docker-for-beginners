@@ -92,12 +92,25 @@ c4b8da22c31d        prtk                "java -jar docker-he…"   3 seconds ago
 
 
 
-B>>>>>>>>>>>>>>BankApp + Mysql Dockerized
+
+
+
+
+
+
+
+
+B>>>>>>>>>>>>>>BankApp + Mysql Dockerized>>>>>>>>>>>>
 
 1. 
 // pulling mysql form hub and contained it..
+
 [root@ip-172-31-30-63 banking.system]# ls
 Dockerfile  mvnw  mvnw.cmd  pom.xml  src  target
+
+//We need to run a separate container of mySql and then link that container with banking.application 
+    running mysql app with the name mysql_b(because we are specified that name in the application.properties file of banking application)
+
 [root@ip-172-31-30-63 banking.system]# docker run --name mysql_b -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USERNAME=root -e MYSQL_DATABASE=test -d mysql
 
 [root@ip-172-31-30-63 banking.system]# docker container ls
@@ -105,7 +118,9 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 8806f5711ea6        mysql               "docker-entrypoint.s…"   17 seconds ago      Up 16 seconds       3306/tcp                 mysql_b
 c4b8da22c31d        prtk                "java -jar docker-he…"   5 minutes ago       Up 5 minutes        0.0.0.0:8080->8080/tcp   prateek
 
-2. //runnig bank docker file
+
+2. //runnig bank docker file and creating a docker image of banking rest api
+
 [root@ip-172-31-30-63 banking.system]# docker build . -t mysql_bank
 Sending build context to Docker daemon  57.07MB
 Step 1/4 : FROM openjdk:8
@@ -133,8 +148,11 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 8806f5711ea6        mysql               "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp                 mysql_b
 c4b8da22c31d        prtk                "java -jar docker-he…"   6 minutes ago        Up 6 minutes        0.0.0.0:8080->8080/tcp   prateek
 
+
 3.
 // linking mysql(mysql_b) container with bankapp(maysql_bank) container..
+    
+
 [root@ip-172-31-30-63 banking.system]# docker run --name mysql_bank_app -p 8080:8080 --link mysql_b mysql_bank
 
   .   ____          _            __ _ _
@@ -150,49 +168,6 @@ c4b8da22c31d        prtk                "java -jar docker-he…"   6 minutes ago
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
 8da18acfc283        mysql_bank          "java -jar bank-mysq…"   4 seconds ago       Up 3 seconds        0.0.0.0:8080->8080/tcp   mysql_bank_ap
 8806f5711ea6        mysql               "docker-entrypoint.s…"   5 minutes ago       Up 5 minutes        3306/tcp                 mysql_b
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
